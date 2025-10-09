@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sana Özel Bir Sürpriz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Özel stiller ve animasyonlar */
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; /* Yatay kaydırmayı engelle */
+        }
+        .font-pacifico {
+            font-family: 'Pacifico', cursive;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        /* Animasyonlar için başlangıç durumu */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        /* Animasyonların aktif durumu */
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .heart-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-pink-50 text-gray-800">
+
+    <!-- Arka plan kalp animasyonu için canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+
+        <!-- Ana Başlık Bölümü -->
+        <header class="text-center min-h-screen flex flex-col justify-center items-center reveal">
+            <h1 class="font-pacifico text-5xl md:text-8xl text-pink-500 drop-shadow-lg">
+                Sevgilim, <span class="text-red-500">Melikem</span>
+            </h1>
+            <p class="mt-6 text-lg md:text-2xl text-gray-600 max-w-2xl">
+                Bu küçük sürpriz, sana olan aşkımın dijital bir yansıması. Hayatıma kattığın her şey için teşekkür ederim.
+            </p>
+            <div class="mt-12">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-400 heart-pulse" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+            </div>
+        </header>
+
+        <!-- Anılarımız Bölümü -->
+        <section class="py-16 md:py-24">
+            <div class="text-center mb-12 reveal">
+                <h2 class="font-pacifico text-4xl md:text-6xl text-pink-500">Birlikte Biriktirdiğimiz Anılar</h2>
+                <p class="mt-4 text-gray-500">Her biri birbirinden değerli...</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Fotoğraf 1 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover reveal">
+                    <img src="https://placehold.co/600x400/f87171/ffffff?text=Fotoğrafınız" alt="Anı 1" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <p class="text-gray-600">Buraya o anıyla ilgili kısa bir not yazabilirsiniz.</p>
+                    </div>
+                </div>
+                <!-- Fotoğraf 2 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover reveal" style="transition-delay: 200ms;">
+                    <img src="https://placehold.co/600x400/fb923c/ffffff?text=Fotoğrafınız" alt="Anı 2" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <p class="text-gray-600">Mesela ilk buluştuğunuz günün fotoğrafı olabilir.</p>
+                    </div>
+                </div>
+                <!-- Fotoğraf 3 -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden card-hover reveal" style="transition-delay: 400ms;">
+                    <img src="https://placehold.co/600x400/facc15/ffffff?text=Fotoğrafınız" alt="Anı 3" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <p class="text-gray-600">Veya unutamadığınız bir tatil anısı...</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center mt-8 text-gray-500 reveal">Not: Fotoğrafları değiştirmek için koddaki `https://placehold.co/...` l</p>
+        </section>
+
+        <!-- Neden Seviyorum Bölümü -->
+        <section class="py-16 md:py-24">
+            <div class="text-center mb-12 reveal">
+                <h2 class="font-pacifico text-4xl md:text-6xl text-pink-500">Seni Sevmemin Bazı Nedenleri</h2>
+                <p class="mt-4 text-gray-500">Aslında sonsuz neden var ama bunlar ilk aklıma gelenler...</p>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-6">
+                <!-- Neden 1 -->
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex items-start space-x-4 reveal card-hover">
+                    <span class="text-red-400 text-2xl mt-1">❤</span>
+                    <p>O güzel gülüşün her şeyi aydınlatıyor ve günümü güzelleştiriyor.</p>
+                </div>
+                <!-- Neden 2 -->
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex items-start space-x-4 reveal card-hover" style="transition-delay: 200ms;">
+                    <span class="text-red-400 text-2xl mt-1">❤</span>
+                    <p>Yanındayken zamanın nasıl geçtiğini unutuyorum, her anımız çok değerli.</p>
+                </div>
+                <!-- Neden 3 -->
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex items-start space-x-4 reveal card-hover" style="transition-delay: 400ms;">
+                    <span class="text-red-400 text-2xl mt-1">❤</span>
+                    <p>En kötü günümde bile beni neşelendirecek bir yol buluyorsun.</p>
+                </div>
+                <!-- Neden 4 -->
+                <div class="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex items-start space-x-4 reveal card-hover" style="transition-delay: 600ms;">
+                    <span class="text-red-400 text-2xl mt-1">❤</span>
+                    <p>Hayallerimi ve hedeflerimi her zaman destekliyorsun, en büyük destekçimsin.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Mesajı Bölümü -->
+        <section class="text-center py-16 md:py-32 reveal">
+             <h2 class="font-pacifico text-4xl md:text-6xl text-pink-500">Sana Son Bir Sözüm Var...</h2>
+             <p class="mt-8 text-xl md:text-3xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                Her geçen gün sana daha çok aşık oluyorum. Hayatıma girdiğin için, beni ben olduğum için sevdiğin için ve her anımda yanımda olduğun için sana minnettarım.
+                <br><br>
+                <span class="font-bold text-red-500">İyi ki varsın, iyi ki benimlesin. Seni Çok Seviyorum!</span>
+             </p>
+        </section>
+        
+        <!-- Altbilgi -->
+        <footer class="text-center pt-12 pb-8 reveal">
+            <p class="font-pacifico text-2xl text-gray-500">Sonsuza Dek Senin, <span class="text-pink-500">Arda</span></p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- Arka Planda Uçuşan Kalpler Animasyonu ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const particleCount = 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 20 + 10; // Kalp boyutu
+                this.speedY = Math.random() * 1.5 + 0.5; // Düşme hızı
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.y += this.speedY;
+                if (this.y > canvas.height) {
+                    this.y = -this.size;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = 'rgba(255, 105, 180, 0.7)'; // Pembe tonu
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x, this.y, this.x + this.size / 4, this.y);
+                ctx.quadraticCurveTo(this.x + this.size / 2, this.y, this.x + this.size / 2, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x + this.size / 2, this.y, this.x + this.size * 3/4, this.y);
+                ctx.quadraticCurveTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x + this.size, this.y + this.size / 2, this.x + this.size * 3/4, this.y + this.size * 3/4);
+                ctx.lineTo(this.x + this.size / 2, this.y + this.size);
+                ctx.lineTo(this.x + this.size / 4, this.y + this.size * 3/4);
+                ctx.quadraticCurveTo(this.x, this.y + this.size / 2, this.x, this.y + this.size / 4);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+
+
+        // --- Sayfa Kaydırıldıkça Animasyonları Tetikleme ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1 // %10'u göründüğünde animasyon başlasın
+        });
+
+        const elementsToReveal = document.querySelectorAll('.reveal');
+        elementsToReveal.forEach(el => observer.observe(el));
+
+    </script>
+</body>
+</html>
+
+
