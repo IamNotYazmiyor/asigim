@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥢 Midyeci Kasa Sistemi</title>
+    <style>
+        /* --- Temel Stiller --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html, body {
+            height: 100vh; /* Tam ekran yüksekliği */
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Sayfa kaymasını engelle */
+        }
+
+        /* --- Başlık --- */
+        header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            background-color: #1a1a1a;
+            flex-shrink: 0; /* Başlık küçülmesin */
+        }
+        header h1 {
+            font-size: 1.8em;
+        }
+
+        /* --- Ana Uygulama Konteyneri --- */
+        .app-container {
+            display: flex;
+            flex-grow: 1; /* Kalan tüm alanı kapla */
+            overflow: hidden; /* İçerik taşarsa kaydırmayı yönet */
+        }
+
+        /* --- Ana İçerik (Masa Listesi) --- */
+        #main-content {
+            flex-grow: 1;
+            overflow-y: auto; /* Sadece bu alan kaydırılabilir */
+            padding: 20px;
+        }
+
+        /* --- Masa Kartları --- */
+        #table-list-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .table-card {
+            background-color: #242424;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 220px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .table-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .table-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #eee;
+        }
+        .table-card-total {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #00ff88; /* Yeşil Toplam Fiyat */
+            margin-bottom: 20px;
+            display: block;
+        }
+        .table-card-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+
+        /* --- Genel Buton Stilleri --- */
+        button {
+            font-family: inherit;
+            font-size: 1em;
+            background-color: #333;
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* --- Ana Kontrol Butonları --- */
+        .main-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        #add-table-btn {
+            background-color: #007bff;
+        }
+        #add-table-btn:hover {
+            background-color: #0056b3;
+        }
+        #end-day-btn {
+            background-color: #ff3333; /* Kırmızı Gün Sonu Butonu */
+        }
+        #end-day-btn:hover {
+            background-color: #cc0000;
+        }
+
+        /* --- Gizli Sınıfı --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Sağ Detay Paneli --- */
+        #detail-panel {
+            flex-basis: 450px; /* Panel genişliği */
+            flex-shrink: 0;
+            background-color: #1e1e1e;
+            border-left: 2px solid #333;
+            overflow-y: auto; /* Panel içeriği taşarsa kaydır */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Panel İçeriği (Dinamik) */
+        #detail-panel-content {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            flex-grow: 1; /* İçerik alanı dolsun */
+        }
+
+        /* Panel Boş Durum (Placeholder) */
+        #detail-panel-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #888;
+            font-size: 1.2em;
+            padding: 40px;
+            flex-grow: 1;
+        }
+
+        #detail-table-name {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #00ff88;
+        }
+
+        /* --- Ürün Menü Butonları --- */
+        #product-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .product-btn {
+            background-color: #333;
+            padding: 15px 10px;
+            font-size: 0.95em;
+            line-height: 1.3;
+        }
+        .product-btn span {
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        /* --- Sipariş Listesi --- */
+        #order-list {
+            list-style: none;
+            margin-bottom: 20px;
+            flex-grow: 1; /* Aradaki boşluğu doldurur */
+        }
+        #order-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 5px;
+            border-bottom: 1px solid #444;
+        }
+        #order-list li:last-child {
+            border-bottom: none;
+        }
+        .order-item-details {
+            flex-grow: 1;
+        }
+        .order-item-name {
+            font-size: 1.1em;
+        }
+        .order-item-qty {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        .order-item-price {
+            font-weight: bold;
+            min-width: 90px;
+            text-align: right;
+            font-size: 1.1em;
+            color: #eee;
+        }
+        .delete-item-btn {
+            background-color: #800000;
+            color: #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 1.1em;
+            line-height: 30px;
+            text-align: center;
+            margin-left: 15px;
+        }
+        .delete-item-btn:hover {
+            background-color: #c00;
+        }
+
+        /* --- Panel Toplam Fiyat --- */
+        .panel-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+        }
+        #panel-total-price {
+            color: #00ff88; /* Yeşil Toplam Fiyat */
+        }
+        #exit-table-btn {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #555;
+        }
+        #exit-table-btn:hover {
+            background-color: #777;
+        }
+
+        /* --- Özel Uyarı Modalı (Gün Sonu) --- */
+        #custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 15px;
+        }
+        #custom-alert-content {
+            background-color: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: left;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            max-width: 90%;
+            width: 450px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        #custom-alert-message {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        #custom-alert-message strong {
+            font-size: 1.4em;
+            color: #00ff88;
+            display: block;
+            margin-bottom: 10px;
+        }
+        #custom-alert-ok-btn {
+            width: 100%;
+            background-color: #007bff;
+        }
+        #custom-alert-ok-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Mobil Uyumluluk --- */
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column; /* Dikey sırala */
+            }
+            #main-content {
+                flex-grow: 1; /* Ana içerik büyüsün */
+                min-height: 50vh; /* Minimum yükseklik */
+            }
+            #detail-panel {
+                flex-basis: auto; /* Genişlik otomatik */
+                max-height: 50vh; /* Yükseklik kısıtlaması */
+                border-left: none;
+                border-top: 2px solid #333;
+            }
+            #detail-table-name {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            #detail-panel-content {
+                padding: 15px;
+            }
+            .panel-total {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Başlık -->
+    <header>
+        <h1>🥢 Midyeci Kasa Sistemi</h1>
+    </header>
+
+    <!-- Ana Uygulama Alanı -->
+    <div class="app-container">
+
+        <!-- Sol Taraf: Masa Listesi -->
+        <main id="main-content">
+            <!-- Masa Kartlarının Geleceği Alan -->
+            <div id="table-list-container">
+                <!-- Masalar JS ile buraya eklenecek -->
+            </div>
+
+            <!-- Ana Kontrol Butonları -->
+            <div class="main-controls">
+                <button id="add-table-btn">+ Masa Ekle</button>
+                <button id="end-day-btn">Günü Bitir</button>
+            </div>
+        </main>
+
+        <!-- Sağ Taraf: Detay Paneli -->
+        <aside id="detail-panel">
+            
+            <!-- Başlangıçta Gösterilen Boş Durum -->
+            <div id="detail-panel-placeholder">
+                <p>İşlem yapmak için bir masa seçin.</p>
+            </div>
+
+            <!-- Masa Seçilince Gösterilen İçerik (Başlangıçta Gizli) -->
+            <div id="detail-panel-content" class="hidden">
+                <!-- Masa Adı -->
+                <h2 id="detail-table-name">Masa Detayları</h2>
+                
+                <!-- Ürün Ekleme Butonları -->
+                <div id="product-menu">
+                    <!-- Ürün butonları JS ile buraya eklenecek -->
+                </div>
+
+                <h3 style="margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px;">Siparişler</h3>
+                
+                <!-- Masanın Sipariş Listesi -->
+                <ul id="order-list">
+                    <!-- Siparişler JS ile buraya eklenecek -->
+                </ul>
+                
+                <!-- Masa Toplamı -->
+                <div class="panel-total">
+                    <span>Toplam:</span>
+                    <span id="panel-total-price">0.00 TL</span>
+                </div>
+
+                <!-- Çıkış Butonu -->
+                <button id="exit-table-btn">Masadan Çık</button>
+            </div>
+        </aside>
+
+    </div> <!-- .app-container sonu -->
+
+    <!-- Gün Sonu Uyarı Modalı (Başlangıçta Gizli) -->
+    <div id="custom-alert-overlay" class="hidden">
+        <div id="custom-alert-content">
+            <div id="custom-alert-message">Gün Sonu Raporu</div>
+            <button id="custom-alert-ok-btn">Tamam</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Sabitler ve Global Değişkenler ---
+            const menu = [
+                { name: "Şırdan", price: 220 },
+                { name: "Midye", price: 15 },
+                { name: "Mumbar", price: 250 },
+                { name: "Mide", price: 150 },
+                { name: "Ayran", price: 20 },
+                { name: "Şalgam", price: 30 },
+                { name: "Su", price: 10 }
+            ];
+
+            let tables = [];
+            let nextTableId = 1;
+            let activeTableId = null;
+
+            // --- DOM Elementleri ---
+            const tableListContainer = document.getElementById('table-list-container');
+            const addTableBtn = document.getElementById('add-table-btn');
+            const endDayBtn = document.getElementById('end-day-btn');
+
+            // Detay Paneli Elementleri
+            const detailPanel = document.getElementById('detail-panel');
+            const detailPanelContent = document.getElementById('detail-panel-content');
+            const detailPanelPlaceholder = document.getElementById('detail-panel-placeholder');
+            const modalTableName = document.getElementById('detail-table-name');
+            const productMenu = document.getElementById('product-menu');
+            const orderList = document.getElementById('order-list');
+            const panelTotal = document.getElementById('panel-total-price');
+            const exitTableBtn = document.getElementById('exit-table-btn');
+
+            // Uyarı Modalı Elementleri
+            const alertOverlay = document.getElementById('custom-alert-overlay');
+            const alertMessage = document.getElementById('custom-alert-message');
+            const alertOkBtn = document.getElementById('custom-alert-ok-btn');
+
+            // --- Yardımcı Fonksiyonlar ---
+            const formatCurrency = (value) => {
+                return value.toFixed(2) + " TL";
+            };
+
+            // --- Ana Fonksiyonlar ---
+
+            // 1. Masaları Ekrana Çiz (Render)
+            function renderTables() {
+                tableListContainer.innerHTML = '';
+                if (tables.length === 0) {
+                    tableListContainer.innerHTML = '<p style="text-align: center; width: 100%; color: #888;">Başlamak için masa ekleyin.</p>';
+                    return;
+                }
+                
+                tables.forEach(table => {
+                    const cardHTML = `
+                        <div class="table-card" id="table-card-${table.id}">
+                            <h3>${table.name}</h3>
+                            <span class="table-card-total">Toplam: ${formatCurrency(table.total)}</span>
+                            <div class="table-card-buttons">
+                                <button class="open-table-btn" data-id="${table.id}">Aç</button>
+                                <button class="delete-table-btn" data-id="${table.id}">Sil</button>
+                            </div>
+                        </div>
+                    `;
+                    tableListContainer.innerHTML += cardHTML;
+                });
+            }
+
+            // 2. Masa Detay Panelini Çiz (Render)
+            function renderTableDetail() {
+                const table = tables.find(t => t.id === activeTableId);
+                if (!table) return;
+
+                // Masa adını güncelle
+                modalTableName.textContent = table.name;
+
+                // Ürün menüsünü oluştur (sadece bir kez)
+                if (productMenu.children.length === 0) {
+                    menu.forEach(product => {
+                        const btn = document.createElement('button');
+                        btn.className = 'product-btn';
+                        btn.innerHTML = `${product.name} <br><span>(${formatCurrency(product.price)})</span>`;
+                        btn.onclick = () => addProductToTable(product.name);
+                        productMenu.appendChild(btn);
+                    });
+                }
+
+                // Sipariş listesini ve toplamı güncelle
+                renderOrderList(table);
+            }
+
+            // 3. Sipariş Listesini ve Toplamı Güncelle
+            function renderOrderList(table) {
+                orderList.innerHTML = ''; // Listeyi temizle
+                
+                if (table.orders.length === 0) {
+                    orderList.innerHTML = '<li style="color: #888; justify-content: center;">Bu masada sipariş yok.</li>';
+                }
+
+                table.orders.forEach(item => {
+                    const itemSubtotal = item.price * item.quantity;
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="order-item-details">
+                            <span class="order-item-name">${item.productName}</span>
+                            <span class="order-item-qty">(Adet: ${item.quantity})</span>
+                        </div>
+                        <span class="order-item-price">${formatCurrency(itemSubtotal)}</span>
+                        <button class="delete-item-btn" data-name="${item.productName}">❌</button>
+                    `;
+                    orderList.appendChild(li);
+                });
+
+                // Paneldeki toplamı güncelle
+                panelTotal.textContent = formatCurrency(table.total);
+            }
+
+            // 4. Masa Toplamını Hesapla
+            function calculateTableTotal(tableId) {
+                const table = tables.find(t => t.id === tableId);
+                if (!table) return;
+
+                table.total = table.orders.reduce((sum, item) => {
+                    return sum + (item.price * item.quantity);
+                }, 0);
+            }
+
+            // --- Olay (Event) Fonksiyonları ---
+
+            // Yeni Masa Ekle
+            function handleAddTable() {
+                const newTable = {
+                    id: nextTableId,
+                    name: `Masa ${nextTableId}`,
+                    orders: [],
+                    total: 0
+                };
+                nextTableId++;
+                tables.push(newTable);
+                renderTables();
+            }
+
+            // Masayı Sil
+            function handleDeleteTable(tableId) {
+                // Eğer silinen masa aktif masaysa, paneli kapat
+                if (activeTableId === tableId) {
+                    handleExitTable();
+                }
+                tables = tables.filter(t => t.id !== tableId);
+                renderTables();
+            }
+
+            // Masa Detayını Aç
+            function handleOpenTableDetail(tableId) {
+                activeTableId = tableId;
+                renderTableDetail();
+                
+                // Paneli göster, placeholder'ı gizle
+                detailPanelPlaceholder.classList.add('hidden');
+                detailPanelContent.classList.remove('hidden');
+            }
+
+            // Masa Detayından Çık (Paneli Temizle)
+            function handleExitTable() {
+                activeTableId = null;
+                
+                // Paneli gizle, placeholder'ı göster
+                detailPanelPlaceholder.classList.remove('hidden');
+                detailPanelContent.classList.add('hidden');
+            }
+
+            // Masaya Ürün Ekle
+            function addProductToTable(productName) {
+                const table = tables.find(t => t.id === activeTableId);
+                const product = menu.find(p => p.name === productName);
+                if (!table || !product) return;
+
+                const existingItem = table.orders.find(item => item.productName === productName);
+
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    table.orders.push({
+                        productName: product.name,
+                        price: product.price,
+                        quantity: 1
+                    });
+                }
+
+                // Toplamı yeniden hesapla
+                calculateTableTotal(activeTableId);
+                // Sipariş listesini güncelle
+                renderOrderList(table);
+                // Ana ekrandaki kartı güncelle
+                renderTables();
+            }
+
+            // Masadan Ürün Sil
+            function handleRemoveProduct(productName) {
+                const table = tables.find(t => t.id === activeTableId);
+                if (!table) return;
+
+                table.orders = table.orders.filter(item => item.productName !== productName);
+
+                // Toplamı yeniden hesapla
+                calculateTableTotal(activeTableId);
+                // Sipariş listesini güncelle
+                renderOrderList(table);
+                // Ana ekrandaki kartı güncelle
+                renderTables();
+            }
+
+            // Günü Bitir
+            function handleEndDay() {
+                let totalRevenue = 0;
+                const productSummary = {}; // Ürün özet deposu
+
+                // Tüm masaları ve siparişleri dolaş
+                tables.forEach(table => {
+                    totalRevenue += table.total;
+                    table.orders.forEach(item => {
+                        if (!productSummary[item.productName]) {
+                            productSummary[item.productName] = 0;
+                        }
+                        productSummary[item.productName] += item.quantity;
+                    });
+                });
+
+                // Rapor metnini oluştur
+                let summaryText = "";
+                for (const [productName, quantity] of Object.entries(productSummary)) {
+                    summaryText += `${productName}: <strong>${quantity} adet</strong><br>`;
+                }
+
+                if (summaryText === "") {
+                    summaryText = "Bugün hiç satış yapılmadı.";
+                }
+
+                const reportMessage = `
+                    <strong>Toplam Kazanç: ${formatCurrency(totalRevenue)}</strong>
+                    <hr style="border-color: #444; margin: 15px 0;">
+                    <strong>Gün Sonu Satış Raporu:</strong><br>
+                    ${summaryText}
+                `;
+                
+                showCustomAlert(reportMessage);
+
+                // Tüm masaları sıfırla (masaları silme, içlerini boşalt)
+                tables.forEach(table => {
+                    table.orders = [];
+                    table.total = 0;
+                });
+
+                // Ekranı güncelle
+                renderTables();
+                // Aktif masayı kapat
+                handleExitTable();
+            }
+
+            // Özel Uyarıyı Göster
+            function showCustomAlert(messageHTML) {
+                alertMessage.innerHTML = messageHTML; // Metin yerine HTML olarak ayarla
+                alertOverlay.classList.remove('hidden');
+            }
+
+            // Özel Uyarıyı Gizle
+            function hideCustomAlert() {
+                alertOverlay.classList.add('hidden');
+            }
+
+            // --- Event Listeners (Olay Dinleyicileri) ---
+
+            // Ana kontrol butonları
+            addTableBtn.addEventListener('click', handleAddTable);
+            endDayBtn.addEventListener('click', handleEndDay);
+
+            // Detay panelinden çıkış
+            exitTableBtn.addEventListener('click', handleExitTable);
+            
+            // Uyarı modalı kapatma
+            alertOkBtn.addEventListener('click', hideCustomAlert);
+
+            // Masa kartlarındaki butonlar (Event Delegation)
+            tableListContainer.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.classList.contains('open-table-btn')) {
+                    const id = parseInt(target.dataset.id, 10);
+                    handleOpenTableDetail(id);
+                }
+                if (target.classList.contains('delete-table-btn')) {
+                    const id = parseInt(target.dataset.id, 10);
+                    handleDeleteTable(id);
+                }
+            });
+
+            // Sipariş listesindeki silme butonları (Event Delegation)
+            orderList.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.classList.contains('delete-item-btn')) {
+                    const name = target.dataset.name;
+                    handleRemoveProduct(name);
+                }
+            });
+
+            // --- Başlangıç ---
+            function initializeApp() {
+                // Başlangıçta 3 masa oluştur
+                handleAddTable();
+                handleAddTable();
+                handleAddTable();
+            }
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
+
+
